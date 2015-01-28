@@ -1,0 +1,19 @@
+{
+  "name": "postcss-cached",
+  "version": "0.0.1",
+  "description": "A wrapper around PostCSS that processes, caches, and inlines @import rules for incremental building",
+  "keywords": ["postcss", "watch", "cache"],
+  "homepage": "https://github.com/vinsonchuong/postcss-cached",
+  "bugs": "https://github.com/vinsonchuong/postcss-cached/issues",
+  "license": "MIT",
+  "author": "Vinson Chuong <vinsonchuong@gmail.com>",
+  "files" ["index.js", "README.md", "LICENSE"],
+  "main": "index.js"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vinsonchuong/postcss-cached"
+  },
+  "dependencies": {
+    "postcss": "^4.0.3"
+  }
+}
