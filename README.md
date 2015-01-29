@@ -13,7 +13,7 @@ be rebuilt.
 
 ## Usage
 `postcss-cached` follows the same interface as
-(postcss)[https://github.com/postcss/postcss], adding:
+[postcss](https://github.com/postcss/postcss), adding:
 
 ### Options
 * `cache`: If given an object, enables caching and stores results in the given
