@@ -7,8 +7,8 @@
   "bugs": "https://github.com/vinsonchuong/postcss-cached/issues",
   "license": "MIT",
   "author": "Vinson Chuong <vinsonchuong@gmail.com>",
-  "files" ["index.js", "README.md", "LICENSE"],
-  "main": "index.js"
+  "files": ["index.js", "README.md", "LICENSE"],
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/vinsonchuong/postcss-cached"
