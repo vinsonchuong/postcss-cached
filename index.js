@@ -6,7 +6,6 @@ var resolve = require('resolve');
 
 module.exports = function() {
   var self = Object.create(postcss.apply(null, arguments));
-  self.cache = {};
 
   function processImports(processedCss, options) {
     var currentDir = path.dirname(processedCss.source.input.file);
@@ -17,12 +16,12 @@ module.exports = function() {
       var mediaQueries = parsedParams[3];
       var absolutePath = path.resolve(currentDir, file);
 
-      if (self.alreadyImported[absolutePath]) {
+      if (options.alreadyImported[absolutePath]) {
         rule.removeSelf();
       } else {
-        self.alreadyImported[absolutePath] = true;
+        options.alreadyImported[absolutePath] = true;
 
-        var processedRule = self.cache[absolutePath];
+        var processedRule = options.cache && options.cache[absolutePath];
         if (!processedRule) {
           var css;
           try {
@@ -50,7 +49,9 @@ module.exports = function() {
               .append(processedRule);
           }
 
-          self.cache[absolutePath] = processedRule;
+          if (options.cache) {
+            options.cache[absolutePath] = processedRule;
+          }
         }
 
         rule.replaceWith(processedRule);
@@ -69,7 +70,7 @@ module.exports = function() {
   }
 
   self.process = function(css, options) {
-    self.alreadyImported = {};
+    options.alreadyImported = {};
     return processCss(css, options);
   }
 

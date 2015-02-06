@@ -73,10 +73,11 @@ describe('PostCSSCached', function() {
   });
 
   it('caches the result of processing each file', function() {
+    var cache = {};
     var dep1 = fs.readFileSync(resolvePath('fixtures/dep1.css'), {encoding: 'utf8'});
-    var result = this.processCss('fixtures/basic_import.css');
+    var result = this.processCss('fixtures/basic_import.css', {cache: cache});
     fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), 'h1 {color: black}');
-    var result2 = this.processCss('fixtures/basic_import.css');
+    var result2 = this.processCss('fixtures/basic_import.css', {cache: cache});
     fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), dep1);
     expect(result2).toEqual(result);
   });
