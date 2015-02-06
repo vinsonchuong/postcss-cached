@@ -1,0 +1,9 @@
+a {
+  color: red;
+}
+
+@import 'dep1.css' (min-width: 700px), handheld and (orientation: landscape);
+
+p {
+  color: red;
+}

@@ -1,0 +1,5 @@
+h2 {
+  color: yellow;
+}
+
+@import 'folder/dep3.css';

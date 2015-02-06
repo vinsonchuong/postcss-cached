@@ -1,0 +1,11 @@
+a {
+  color: red;
+}
+
+@import 'dep1.css';
+
+p {
+  color: red;
+}
+
+@import 'dep1.css';
