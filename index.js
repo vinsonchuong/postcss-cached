@@ -2,6 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 var postcss = require('postcss');
+var Root = require('postcss/lib/root');
 var resolve = require('resolve');
 
 module.exports = function() {
@@ -65,11 +66,13 @@ module.exports = function() {
     options = Object(options);
     return self.plugins.concat(processImports)
       .reduce(function(memo, plugin) {
-        return plugin(memo, options);
+        var result =  plugin(memo, options);
+        return result instanceof Root ? result : memo;
       }, postcss.parse(css, options));
   }
 
   self.process = function(css, options) {
+    options = Object(options);
     options.alreadyImported = {};
     return processCss(css, options)
       .toResult(options);

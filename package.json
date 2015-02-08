@@ -1,6 +1,6 @@
 {
   "name": "postcss-cached",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A wrapper around PostCSS that processes, caches, and inlines @import rules for incremental building",
   "keywords": ["postcss", "watch", "cache"],
   "homepage": "https://github.com/vinsonchuong/postcss-cached",
@@ -15,7 +15,8 @@
   },
   "devDependencies": {
     "jasmine": "^2.2.0",
-    "bootstrap": "3.3.2"
+    "bootstrap": "3.3.2",
+    "cssnext": "^1.0.0"
   },
   "dependencies": {
     "postcss": "^4.0.3",

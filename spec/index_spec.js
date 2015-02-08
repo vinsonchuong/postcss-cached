@@ -3,6 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var postcss = require('postcss');
 var postcssCached = require('../index');
+var cssnext = require('cssnext');
 
 function resolvePath(relativePath) {
   return path.resolve(__dirname, relativePath);
@@ -84,5 +85,17 @@ describe('PostCSSCached', function() {
   it('generates the correct source maps', function() {
     expect(this.processCss('fixtures/basic_import.css', {map: true}))
       .toEqual(readFile('fixtures/basic_with_source_map.css'));
+  });
+
+  it('supports the cssnext plugin', function() {
+    this.cssnext = cssnext();
+    this.postcss = postcss().use(this.cssnext);
+    this.postcssCached = postcssCached().use(this.cssnext);
+
+    expect(this.postcss.plugins).toEqual(this.postcssCached.plugins);
+
+    var css = readFile('fixtures/cssnext.css');
+    expect(this.postcssCached.process(css).css)
+      .toEqual(this.postcss.process(css).css);
   });
 });
