@@ -20,7 +20,6 @@ describe('PostCSSCached', function() {
       options.from = resolvePath(file);
       return this.postcssCached
         .process(readFile(file), options)
-        .toResult(options)
         .css;
     };
   });

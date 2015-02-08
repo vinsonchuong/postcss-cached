@@ -71,7 +71,8 @@ module.exports = function() {
 
   self.process = function(css, options) {
     options.alreadyImported = {};
-    return processCss(css, options);
+    return processCss(css, options)
+      .toResult(options);
   }
 
   return self;
