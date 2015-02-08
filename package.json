@@ -1,6 +1,6 @@
 {
   "name": "postcss-cached",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A wrapper around PostCSS that processes, caches, and inlines @import rules for incremental building",
   "keywords": ["postcss", "watch", "cache"],
   "homepage": "https://github.com/vinsonchuong/postcss-cached",
