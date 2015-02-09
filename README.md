@@ -1,4 +1,5 @@
 # postcss-cached
+[![Build Status](https://travis-ci.org/vinsonchuong/postcss-cached.svg?branch=master)](https://travis-ci.org/vinsonchuong/postcss-cached)
 A wrapper around PostCSS that processes, caches, and inlines `@import` rules
 for incremental building
 
