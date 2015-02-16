@@ -15,8 +15,24 @@ be rebuilt.
 
 ## Usage
 `postcss-cached` follows the same interface as
-[postcss](https://github.com/postcss/postcss), adding:
+[postcss](https://github.com/postcss/postcss). In addition, `#process()` now
+takes and returns the following:
+
+```js
+var postcssCached = require('postcss-cached');
+var postcssCachedInstance = postcssCached();
+
+var options = {};
+options.cache = {};
+
+var result = postcssCachedInstance.process('css string', options);
+
+console.log(result.imports);
+```
 
 ### Options
-* `cache`: If given an object, enables caching and stores results in the given
-  object using absolute paths as keys.
+* `cache`: If given an object, enables caching and stores processed files in the
+  given object using absolute paths as keys.
+
+### Returns
+* `imports`: A tree of absolute file path to files imported by that file

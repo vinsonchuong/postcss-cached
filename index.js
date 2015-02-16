@@ -9,16 +9,18 @@ module.exports = function() {
   var self = Object.create(postcss.apply(null, arguments));
 
   function processImports(processedCss, options) {
-    var currentDir = path.dirname(processedCss.source.input.file);
+    var parentDir = path.dirname(processedCss.source.input.file);
+    processedCss.imports = {};
 
     processedCss.eachAtRule('import', function(rule) {
       var parsedParams = rule.params.match(/(['"])(.*?)\1(?:.*?\s+(.*))?/);
       var file = parsedParams[2];
       var mediaQueries = parsedParams[3];
-      var absolutePath = path.resolve(currentDir, file);
+      var absolutePath = path.resolve(parentDir, file);
 
       if (options.alreadyImported[absolutePath]) {
         rule.removeSelf();
+        processedCss.imports[absolutePath] = true;
       } else {
         options.alreadyImported[absolutePath] = true;
 
@@ -40,7 +42,7 @@ module.exports = function() {
               throw new Error('Unable to resolve ' + file);
             }
           }
-          var importOptions = Object(options)
+          var importOptions = Object.create(options)
           importOptions.from = absolutePath;
           processedRule = processCss(css, importOptions);
 
@@ -55,6 +57,8 @@ module.exports = function() {
           }
         }
 
+        processedCss.imports[absolutePath] = processedRule.imports;
+
         rule.replaceWith(processedRule);
       }
     });
@@ -63,7 +67,6 @@ module.exports = function() {
   };
 
   function processCss(css, options) {
-    options = Object(options);
     return self.plugins.concat(processImports)
       .reduce(function(memo, plugin) {
         var result =  plugin(memo, options);
@@ -72,10 +75,13 @@ module.exports = function() {
   }
 
   self.process = function(css, options) {
-    options = Object(options);
+    options = Object.create(Object(options));
     options.alreadyImported = {};
-    return processCss(css, options)
-      .toResult(options);
+
+    var processedCss = processCss(css, options);
+    var result = processedCss.toResult(options);
+    result.imports = processedCss.imports;
+    return result;
   }
 
   return self;

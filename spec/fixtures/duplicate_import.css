@@ -2,10 +2,10 @@ a {
   color: red;
 }
 
-@import 'dep1.css';
+@import 'dep2.css';
 
 p {
   color: red;
 }
 
-@import 'dep1.css';
+@import 'folder/dep3.css';

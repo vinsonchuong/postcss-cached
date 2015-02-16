@@ -20,8 +20,7 @@ describe('PostCSSCached', function() {
       options = options || {};
       options.from = resolvePath(file);
       return this.postcssCached
-        .process(readFile(file), options)
-        .css;
+        .process(readFile(file), options);
     };
   });
 
@@ -39,18 +38,18 @@ describe('PostCSSCached', function() {
   });
 
   it('inlines imports', function() {
-    expect(this.processCss('fixtures/basic_import.css'))
+    expect(this.processCss('fixtures/basic_import.css').css)
       .toEqual(readFile('fixtures/basic_import.out.css'));
   });
 
   it('imports CSS files from an npm package', function() {
-    var result = this.processCss('fixtures/npm_import.css');
+    var result = this.processCss('fixtures/npm_import.css').css;
     expect(result).toContain('h1 {\n  color: red;\n}');
     expect(result).toContain('Bootstrap v3.3.2');
   });
 
   it('imports the default CSS file from an npm package', function() {
-    var result = this.processCss('fixtures/npm_default_import.css');
+    var result = this.processCss('fixtures/npm_default_import.css').css;
     expect(result).toContain('h1 {\n  color: red;\n}');
     expect(result).toContain('Bootstrap v3.3.2');
   });
@@ -58,32 +57,32 @@ describe('PostCSSCached', function() {
   it('raises an error when importing a file that does not exist', function() {
     var self = this;
     expect(function() {
-      self.processCss('fixtures/bad_import.css');
+      self.processCss('fixtures/bad_import.css').css;
     }).toThrowError('Unable to resolve imaginary_file.css');
   });
 
   it('does not import the same file twice', function() {
-    expect(this.processCss('fixtures/duplicate_import.css'))
+    expect(this.processCss('fixtures/duplicate_import.css').css)
       .toEqual(readFile('fixtures/duplicate_import.out.css'));
   });
 
   it('converts any media queries on the import', function() {
-    expect(this.processCss('fixtures/media_queries.css'))
+    expect(this.processCss('fixtures/media_queries.css').css)
       .toEqual(readFile('fixtures/media_queries.out.css'));
   });
 
   it('caches the result of processing each file', function() {
     var cache = {};
     var dep1 = fs.readFileSync(resolvePath('fixtures/dep1.css'), {encoding: 'utf8'});
-    var result = this.processCss('fixtures/basic_import.css', {cache: cache});
+    var result = this.processCss('fixtures/basic_import.css', {cache: cache}).css;
     fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), 'h1 {color: black}');
-    var result2 = this.processCss('fixtures/basic_import.css', {cache: cache});
+    var result2 = this.processCss('fixtures/basic_import.css', {cache: cache}).css;
     fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), dep1);
     expect(result2).toEqual(result);
   });
 
   it('generates the correct source maps', function() {
-    expect(this.processCss('fixtures/basic_import.css', {map: true}))
+    expect(this.processCss('fixtures/basic_import.css', {map: true}).css)
       .toEqual(readFile('fixtures/basic_with_source_map.css'));
   });
 
@@ -97,5 +96,29 @@ describe('PostCSSCached', function() {
     var css = readFile('fixtures/cssnext.css');
     expect(this.postcssCached.process(css).css)
       .toEqual(this.postcss.process(css).css);
+  });
+
+  it('computes a tree of imported files', function() {
+    var expectedImports = {};
+    expectedImports[resolvePath('fixtures/dep1.css')] = {};
+    var dep2 = expectedImports[resolvePath('fixtures/dep2.css')] = {};
+    dep2[resolvePath('fixtures/folder/dep3.css')] = {};
+
+    var cache = {};
+
+    expect(this.processCss('fixtures/basic_import.css', {cache: cache}).imports)
+      .toEqual(expectedImports);
+    expect(this.processCss('fixtures/basic_import.css', {cache: cache}).imports)
+      .toEqual(expectedImports);
+  });
+
+  it('includes duplicate imports in the tree of imported files', function() {
+    var expectedImports = {};
+    var dep2 = expectedImports[resolvePath('fixtures/dep2.css')] = {};
+    dep2[resolvePath('fixtures/folder/dep3.css')] = {};
+    expectedImports[resolvePath('fixtures/folder/dep3.css')] = true;
+
+    expect(this.processCss('fixtures/duplicate_import.css').imports)
+      .toEqual(expectedImports);
   });
 });
