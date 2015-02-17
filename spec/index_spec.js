@@ -71,16 +71,6 @@ describe('PostCSSCached', function() {
       .toEqual(readFile('fixtures/media_queries.out.css'));
   });
 
-  it('caches the result of processing each file', function() {
-    var cache = {};
-    var dep1 = fs.readFileSync(resolvePath('fixtures/dep1.css'), {encoding: 'utf8'});
-    var result = this.processCss('fixtures/basic_import.css', {cache: cache}).css;
-    fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), 'h1 {color: black}');
-    var result2 = this.processCss('fixtures/basic_import.css', {cache: cache}).css;
-    fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), dep1);
-    expect(result2).toEqual(result);
-  });
-
   it('generates the correct source maps', function() {
     expect(this.processCss('fixtures/basic_import.css', {map: true}).css)
       .toEqual(readFile('fixtures/basic_with_source_map.css'));
@@ -120,5 +110,61 @@ describe('PostCSSCached', function() {
 
     expect(this.processCss('fixtures/duplicate_import.css').imports)
       .toEqual(expectedImports);
+  });
+
+  it('caches the result of processing each file', function() {
+    var dep1 = fs.readFileSync(resolvePath('fixtures/dep1.css'), {encoding: 'utf8'});
+    var result = this.processCss('fixtures/basic_import.css').css;
+    fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), 'h1 {color: black}');
+    var result2 = this.processCss('fixtures/basic_import.css').css;
+    fs.writeSync(fs.openSync(resolvePath('fixtures/dep1.css'), 'w'), dep1);
+    expect(result2).toEqual(result);
+  });
+
+  it('can remove files from the cache', function() {
+    this.processCss('fixtures/basic_import.css').css;
+    expect(this.postcssCached.cache[resolvePath('fixtures/dep1.css')])
+      .toBeTruthy();
+    this.postcssCached.delete(resolvePath('fixtures/dep1.css'))
+    expect(this.postcssCached.cache[resolvePath('fixtures/dep1.css')])
+      .toBeFalsy();
+  });
+
+  it('can remove changed files and their importers from the cache', function() {
+    this.processCss('fixtures/basic_import.css');
+
+    this.postcssCached.change(resolvePath('fixtures/dep1.css'));
+    expect(Object.keys(this.postcssCached.cache).sort()).toEqual([
+      resolvePath('fixtures/dep2.css'),
+      resolvePath('fixtures/folder/dep3.css')
+    ]);
+
+    this.processCss('fixtures/basic_import.css');
+
+    this.postcssCached.change(resolvePath('fixtures/folder/dep3.css'));
+    expect(Object.keys(this.postcssCached.cache)).toEqual([
+      resolvePath('fixtures/dep1.css')
+    ]);
+
+    this.processCss('fixtures/basic_import.css');
+    expect(Object.keys(this.postcssCached.cache).sort()).toEqual([
+      resolvePath('fixtures/dep1.css'),
+      resolvePath('fixtures/dep2.css'),
+      resolvePath('fixtures/folder/dep3.css')
+    ]);
+  });
+
+  fit('can property expire changed files with duplicate imports', function() {
+    this.processCss('fixtures/duplicate_import.css');
+
+    this.postcssCached.change(resolvePath('fixtures/dep2.css'));
+    expect(Object.keys(this.postcssCached.cache)).toEqual([
+      resolvePath('fixtures/folder/dep3.css')
+    ]);
+
+    this.processCss('fixtures/duplicate_import.css');
+
+    this.postcssCached.change(resolvePath('fixtures/folder/dep3.css'));
+    expect(Object.keys(this.postcssCached.cache)).toEqual([]);
   });
 });

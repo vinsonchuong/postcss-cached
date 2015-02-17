@@ -7,6 +7,7 @@ var resolve = require('resolve');
 
 module.exports = function() {
   var self = Object.create(postcss.apply(null, arguments));
+  self.cache = {};
 
   function processImports(processedCss, options) {
     var parentDir = path.dirname(processedCss.source.input.file);
@@ -24,7 +25,7 @@ module.exports = function() {
       } else {
         options.alreadyImported[absolutePath] = true;
 
-        var processedRule = options.cache && options.cache[absolutePath];
+        var processedRule = self.cache[absolutePath];
         if (!processedRule) {
           var css;
           try {
@@ -52,9 +53,7 @@ module.exports = function() {
               .append(processedRule);
           }
 
-          if (options.cache) {
-            options.cache[absolutePath] = processedRule;
-          }
+          self.cache[absolutePath] = processedRule;
         }
 
         processedCss.imports[absolutePath] = processedRule.imports;
@@ -80,8 +79,25 @@ module.exports = function() {
 
     var processedCss = processCss(css, options);
     var result = processedCss.toResult(options);
-    result.imports = processedCss.imports;
+    self.imports = result.imports = processedCss.imports;
     return result;
+  }
+
+  self.delete = function(filePath) {
+    return delete self.cache[filePath];
+  };
+
+  self.change = function(filePath) {
+    self.delete(filePath);
+
+    (function search(nodePath, node) {
+      return node !== true && Object.keys(node).reduce(function(memo, importPath) {
+        return (
+          importPath === filePath ||
+          search(importPath, node[importPath])
+        ) && self.delete(nodePath);
+      }, false);
+    })('', self.imports);
   }
 
   return self;

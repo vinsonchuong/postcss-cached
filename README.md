@@ -14,25 +14,26 @@ be rebuilt.
 [npm package](https://www.npmjs.com/package/postcss-cached).
 
 ## Usage
-`postcss-cached` follows the same interface as
-[postcss](https://github.com/postcss/postcss). In addition, `#process()` now
-takes and returns the following:
+`postcss-cached` adds to the interface of
+[postcss](https://github.com/postcss/postcss) as follows: 
 
 ```js
 var postcssCached = require('postcss-cached');
 var postcssCachedInstance = postcssCached();
 
-var options = {};
-options.cache = {};
-
 var result = postcssCachedInstance.process('css string', options);
-
 console.log(result.imports);
 ```
 
-### Options
-* `cache`: If given an object, enables caching and stores processed files in the
-  given object using absolute paths as keys.
+`postcssCached.process(cssString, options)` returns an object with an `imports`
+property, a tree of absolute file paths to subtrees of imports by those files.
 
-### Returns
-* `imports`: A tree of absolute file path to files imported by that file
+`postcssCachedInstance.cache` is a map of absolute file path to processed
+result. If a path exists in the cache, its processed result will be used;
+the file will not be reprocessed.
+
+`postcssCached.delete(filePath)` removes the `filePath` from the cache.
+
+`postcssCached.change(filePath)` recursively removes `filePath` and files that
+import it from the cache. So that calling `postcssCached.process` again picks
+up the changes.
