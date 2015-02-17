@@ -154,7 +154,7 @@ describe('PostCSSCached', function() {
     ]);
   });
 
-  fit('can property expire changed files with duplicate imports', function() {
+  it('can property expire changed files with duplicate imports', function() {
     this.processCss('fixtures/duplicate_import.css');
 
     this.postcssCached.change(resolvePath('fixtures/dep2.css'));
