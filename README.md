@@ -19,21 +19,5 @@ be rebuilt.
 
 ```js
 var postcssCached = require('postcss-cached');
-var postcssCachedInstance = postcssCached();
-
-var result = postcssCachedInstance.process('css string', options);
-console.log(result.imports);
+var result = postcssCached().process('css file contents', {from: 'path to css file'});
 ```
-
-`postcssCached.process(cssString, options)` returns an object with an `imports`
-property, a tree of absolute file paths to subtrees of imports by those files.
-
-`postcssCachedInstance.cache` is a map of absolute file path to processed
-result. If a path exists in the cache, its processed result will be used;
-the file will not be reprocessed.
-
-`postcssCached.delete(filePath)` removes the `filePath` from the cache.
-
-`postcssCached.change(filePath)` recursively removes `filePath` and files that
-import it from the cache. So that calling `postcssCached.process` again picks
-up the changes.
