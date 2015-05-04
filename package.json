@@ -15,12 +15,14 @@
   },
   "devDependencies": {
     "jasmine": "^2.3.1",
+    "jasmine-es6": "^0.0.1",
     "bootstrap": "3.3.2",
     "cssnext": "^1.4.0"
   },
   "dependencies": {
     "babel": "^5.2.6",
     "babel-runtime": "^5.2.6",
+    "fs-promise": "^0.3.1",
     "es6-promisify": "^1.1.1",
     "postcss": "^4.1.8",
     "resolve": "^1.1.6"

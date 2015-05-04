@@ -1,6 +1,6 @@
 import originalPostcss from 'postcss';
 import cssnext from 'cssnext';
-import TestPromise from '../helpers/promise';
+import {Promise as TestPromise} from 'jasmine-es6';
 import PostCss from '../../lib/postcss';
 
 function pluginSpy(name) {

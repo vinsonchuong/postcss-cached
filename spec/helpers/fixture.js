@@ -1,5 +1,5 @@
 import path from 'path';
-import {fs} from '../../lib/async';
+import fs from 'fs-promise';
 
 export default async function fixture(filePath) {
   const absolutePath = path.resolve(__dirname, '..', 'fixtures', filePath);

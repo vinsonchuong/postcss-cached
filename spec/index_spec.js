@@ -1,8 +1,9 @@
 import path from 'path';
+import fs from 'fs-promise';
 import cssnext from 'cssnext';
 import postcss from 'postcss';
-import {fs, resolve} from '../lib/async';
-import catchError from './helpers/catch_error';
+import {resolve} from '../lib/async';
+import {catchError} from 'jasmine-es6';
 import fixture from './helpers/fixture';
 import postcssCached from '../';
 
